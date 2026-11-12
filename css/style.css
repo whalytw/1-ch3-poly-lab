@@ -635,12 +635,14 @@ img, svg, canvas { -webkit-user-drag: none; }
    ====================================================================== */
 
 /* ---------- 第 1 關：曲線配對站（沿用電路接線版面） ---------- */
-.l1m .col-l { width: 40%; justify-content: space-around; }
-.l1m .sock-l { padding: 0 1.1em 0 0.4em; }
-.l1m .col-r { width: 44%; top: 1.5%; bottom: 1.5%; justify-content: space-between; }
-.l1m .sock-l { height: 10.5cqh; }
-.sock-g { height: 23.5%; padding: 0; }
-.sock-g .thumb { position: absolute; inset: 0.35em 0.5em 0.35em 1.1em; width: calc(100% - 1.6em); height: calc(100% - 0.7em); }
+.lv1 { grid-template-rows: 5cqh 7.5cqh minmax(0, 1fr) 8.6cqh 9.6cqh; }
+.lv1 .lv-q { display: flex; align-items: center; }
+.l3-prog.inline { display: inline-block; margin: 0 0 0 0.6em; white-space: nowrap; }
+.l1m .col-l { width: 41%; top: 4%; bottom: 4%; justify-content: space-around; }
+.l1m .sock-l { height: 12cqh; padding: 0 1.1em 0 0.4em; }
+.l1m .col-r { width: 45%; top: 1.5%; bottom: 1.5%; justify-content: space-between; }
+.l1m .col-r .sock-g { height: 31.5%; padding: 0; }
+.sock-g .thumb { position: absolute; inset: 0.45em 0.6em 0.45em 1.2em; width: calc(100% - 1.8em); height: calc(100% - 0.9em); }
 .sock-g.done { background: color-mix(in srgb, var(--ok) 12%, var(--ink-card)); border-color: var(--ok); }
 
 /* ---------- 第 2 關：平移對準 ---------- */

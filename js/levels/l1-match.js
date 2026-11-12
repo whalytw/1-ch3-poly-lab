@@ -1,5 +1,5 @@
 /* 第 1 關｜曲線配對站（三次函數的圖形）
-   沿用「電路接線」：左邊 3 個三次函數、右邊 4 張圖形（1 張用不到），把函數拖線接到它的圖形。
+   沿用「電路接線」：左邊 2 個三次函數、右邊 3 張圖形（1 張用不到），把函數拖線接到它的圖形。
    簡單：y=ax³+px 的 a、p 正負號；標準：同一個視窗比較爬升快慢與 p=0；挑戰：因式分解式，看交點與大域特徵。 */
 'use strict';
 (function (LG) {
@@ -15,7 +15,7 @@
   const cubicSpec = (a, p, win) => ({ f: x => a * x * x * x + p * x, tex: monoTex(a, p), win, key: `c${a}_${p}` });
 
   function easyGraphs() {
-    const combos = [[1, 1], [1, -1], [-1, -1], [-1, 1]];
+    const combos = U.shuffle([[1, 1], [1, -1], [-1, -1], [-1, 1]]).slice(0, 3);
     return combos.map(([sa, sp]) => {
       const a = sa * U.pick([1, 2, 3]), p = sp * U.pick([1, 2, 3]);
       const X = 1.45 * Math.sqrt(Math.abs(p / a));
@@ -35,7 +35,7 @@
       [[0.5, 0], [k, 0], [-1, b], [1, -b]],
       [[1, b], [1, -b], [-1, -b], [-1, b]]
     ];
-    return U.pick(T).map(([a, p]) => cubicSpec(a, p, NWIN));
+    return U.shuffle(U.pick(T)).slice(0, 3).map(([a, p]) => cubicSpec(a, p, NWIN));
   }
 
   /* 因式分解式：lead·Π(x−r)^m */
@@ -64,10 +64,10 @@
         [-s, [[r2, 1], [r3, 2]]],
         [s, [[-r3, 1], [-r2, 1], [-r1, 1]]]
       ];
-      const pick = U.shuffle(vars).slice(0, 4);
+      const pick = U.shuffle(vars).slice(0, 3);
       // 不可以有兩張圖完全相同
       const keys = pick.map(([l, f]) => l + JSON.stringify(f.slice().sort((a, b) => a[0] - b[0])));
-      if (new Set(keys).size < 4) continue;
+      if (new Set(keys).size < 3) continue;
       const all = pick.flatMap(([, f]) => f.map(x => x[0]));
       const lo = Math.min(...all) - 1.25, hi = Math.max(...all) + 1.25;
       return pick.map(([l, f]) => {
@@ -94,7 +94,7 @@
     graphs.forEach(g => recent.push(g.key));
     while (recent.length > 10) recent.shift();
     graphs.forEach((g, i) => { g.id = i; });
-    const used = U.shuffle(graphs).slice(0, 3);
+    const used = U.shuffle(graphs).slice(0, 2);
     const hint = diff === 'hard'
       ? '看與 $x$ 軸的交點（平方的因式只碰一下 $x$ 軸、不穿過）\n最高次項係數為正：最右方往上；為負：最右方往下'
       : diff === 'normal'
@@ -105,7 +105,7 @@
       items: used.map(g => ({ tex: g.tex, v: g.id })),
       graphs: U.shuffle(graphs),
       hint,
-      explain: used.map(g => `$${g.tex}$`).join('、') + ' 依序接到各自的圖形'
+      explain: used.map(g => `$${g.tex}$`).join('、') + ' 依序接到亮起的圖形，暗掉的那張用不到'
     };
   }
 
@@ -128,7 +128,7 @@
     g.lineWidth = 1.5 * s;
     g.beginPath(); g.moveTo(0, Y(0)); g.lineTo(W, Y(0)); g.moveTo(X(0), 0); g.lineTo(X(0), H); g.stroke();
     if (spec.ticks) {
-      g.font = `700 ${Math.max(10 * s, H * 0.17)}px "Barlow Condensed", sans-serif`;
+      g.font = `700 ${Math.max(10 * s, Math.min(H * 0.12, 15 * s))}px "Barlow Condensed", sans-serif`;
       g.fillStyle = 'rgba(200, 222, 245, 0.85)';
       g.textAlign = 'center'; g.textBaseline = 'top';
       for (let x = Math.ceil(w.x0); x <= Math.floor(w.x1); x++) {
@@ -165,8 +165,8 @@
     constructor(zone, q, scr) {
       super(zone, q, scr);
       this.celebrateTime = 2.3;
-      this.setQuestion(U.rich('把左邊每個函數拖線接到它的圖形（右邊有一張圖用不到）') +
-        '<span class="l3-prog">已接通 <b>0</b>／3</span>');
+      this.setQuestion(U.rich('把函數拖線接到它的圖形（一張用不到）') +
+        '<span class="l3-prog inline">已接通 <b>0</b>／2</span>');
       const m = scr.main;
       m.classList.add('l3', 'l1m');
       m.innerHTML = `<div class="board"><svg class="c-svg"></svg><div class="col col-l"></div><div class="col col-r"></div></div>`;
@@ -288,7 +288,7 @@
         this.scr.q.querySelector('.l3-prog b').textContent = String(this.count);
         const o = this.zoff(this.board);
         this.zone.fx.burst(o.x + b.plug.x, o.y + b.plug.y, { n: 16, colors: [U.UNIT_HEX.graph, '#fff6c0'], speed: [80, 300], gravity: 200 });
-        if (this.count === 3) this.submit(true);
+        if (this.count === this.left.length) this.submit(true);
         this.render();
         return;
       }
